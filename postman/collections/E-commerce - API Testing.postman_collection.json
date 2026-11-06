@@ -11,7 +11,7 @@
       "name": "01 - Catalogo de Produtos",
       "item": [
         {
-          "name": "GET - Listar Produtos",
+          "name": "Listar Produtos",
           "event": [
             {
               "listen": "test",
@@ -19,6 +19,185 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Validar status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Validar lista de produtos\", function () {\r\n    const resposta = pm.response.json();\r\n    pm.expect(resposta.products).to.be.an(\"array\");\r\n});\r\n\r\npm.test(\"Validar lista de produtos não vazia\", function () {\r\n    const resposta = pm.response.json();    \r\n    pm.expect(resposta.products.length).to.be.above(0);\r\n});\r\n\r\npm.test(\"Validar ID do primeiro produto\", function () {\r\n    const resposta = pm.response.json();\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    const produto = resposta.products[0];\r\n\r\n    pm.expect(produto.id).to.be.a(\"number\");\r\n    pm.expect(produto.id).to.be.above(0);\r\n});\r\n\r\npm.test(\"Validar título do primeiro produto\", function () {\r\n    const resposta = pm.response.json();\r\n    \r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n\r\n    const produto = resposta.products[0];\r\n\r\n    pm.expect(produto.title).to.be.a(\"string\");\r\n    pm.expect(produto.title.trim()).to.not.be.empty;\r\n});\r\n\r\npm.test(\"Validar preço do primeiro produto\", function () {\r\n    const resposta = pm.response.json();\r\n    \r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n\r\n    const produto = resposta.products[0];\r\n\r\n    pm.expect(produto.price).to.be.a(\"number\");\r\n    pm.expect(produto.price).to.be.above(0);\r\n});\r\n\r\npm.test(\"Validar ID de todos os produtos\", function () {\r\n    const resposta = pm.response.json();\r\n    \r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n\r\n    resposta.products.forEach(function (produto) {\r\n        pm.expect(produto.id).to.be.a(\"number\");\r\n        pm.expect(produto.id).to.be.above(0);\r\n    });\r\n});\r\n\r\n\r\npm.test(\"Identificar produtos com preço inválido\", function () {\r\n    const resposta = pm.response.json();\r\n   \r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n\r\n    const produtosInvalidos = resposta.products\r\n        .filter(function (produto) {\r\n            return typeof produto.price !== \"number\" || produto.price <= 0;\r\n        })\r\n        .map(function (produto) {\r\n            return {\r\n                id: produto.id,\r\n                titulo: produto.title,\r\n                preco: produto.price\r\n            };\r\n        });\r\n\r\n    console.log(\r\n        \"RELATÓRIO DE PRODUTOS COM PREÇO INVÁLIDO:\\n\" +\r\n        JSON.stringify(produtosInvalidos, null, 2)\r\n    );  \r\n\r\n    pm.expect(produtosInvalidos.length).to.equal(0);\r\n});\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products?limit=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consulta de Produto por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-009 - Validar HTTP 200 para produto existente\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-010 - Validar estrutura JSON de um único produto\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.be.an(\"object\");\r\n    pm.expect(resposta).to.not.be.an(\"array\");\r\n});\r\n\r\npm.test(\"CT-API-011 - Validar correspondência entre ID solicitado e retornado\", function () {\r\n    const resposta = pm.response.json();\r\n    const idSolicitado = Number(pm.request.url.path[1]);\r\n\r\n    pm.expect(resposta).to.have.property(\"id\");\r\n    pm.expect(resposta.id).to.be.a(\"number\");\r\n    pm.expect(Number.isInteger(resposta.id)).to.be.true;\r\n    pm.expect(resposta.id).to.be.above(0);\r\n    pm.expect(resposta.id).to.equal(idSolicitado);\r\n});\r\n\r\npm.test(\"CT-API-012 - Validar campos essenciais do produto\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    const camposEssenciais = [\r\n        \"id\",\r\n        \"title\",\r\n        \"description\",\r\n        \"category\",\r\n        \"price\",\r\n        \"images\",\r\n        \"thumbnail\"\r\n    ];\r\n\r\n    camposEssenciais.forEach(function (campo) {\r\n        pm.expect(resposta).to.have.property(campo);\r\n    });\r\n});\r\n\r\npm.test(\"CT-API-013 - Validar integridade dos valores dos campos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(Number.isInteger(resposta.id) && resposta.id > 0).to.be.true;\r\n\r\n    [\"title\", \"description\", \"category\", \"thumbnail\"].forEach(function (campo) {\r\n        pm.expect(resposta[campo]).to.be.a(\"string\");\r\n        pm.expect(resposta[campo].trim()).to.not.be.empty;\r\n    });\r\n\r\n    pm.expect(resposta.price).to.be.a(\"number\");\r\n    pm.expect(resposta.price).to.be.above(0);\r\n\r\n    pm.expect(resposta.images).to.be.an(\"array\").that.is.not.empty;\r\n\r\n    resposta.images.forEach(function (imagem) {\r\n        pm.expect(imagem).to.be.a(\"string\");\r\n        pm.expect(imagem.trim()).to.not.be.empty;\r\n    });\r\n});\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/96",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "96"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Produto Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-014 - Validar HTTP 404 para produto com ID inexistente\", function () {\r\n    pm.response.to.have.status(404);\r\n\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.not.have.property(\"id\");\r\n});\r\n\r\npm.test(\"CT-API-018 - Validar mensagem de erro\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.have.property(\"message\");\r\n    pm.expect(resposta.message).to.be.a(\"string\");\r\n    pm.expect(resposta.message.trim()).to.not.be.empty;\r\n    pm.expect(resposta.message.toLowerCase()).to.include(\"not found\");\r\n});\r\n\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/99999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "99999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Produto com ID Zero",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-016 - Validar HTTP 404 para ID igual a zero\", function () {\r\n    pm.response.to.have.status(404);\r\n\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.not.have.property(\"id\");\r\n});\r\n\r\npm.test(\"CT-API-018 - Validar mensagem de erro\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.have.property(\"message\");\r\n    pm.expect(resposta.message).to.be.a(\"string\");\r\n    pm.expect(resposta.message.trim()).to.not.be.empty;\r\n    pm.expect(resposta.message.toLowerCase()).to.include(\"not found\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Produto com ID Negativo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-017 - Validar HTTP 404 para ID negativo\", function () {\r\n    pm.response.to.have.status(404);\r\n\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.not.have.property(\"id\");\r\n});\r\n\r\npm.test(\"CT-API-018 - Validar mensagem de erro\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.have.property(\"message\");\r\n    pm.expect(resposta.message).to.be.a(\"string\");\r\n    pm.expect(resposta.message.trim()).to.not.be.empty;\r\n    pm.expect(resposta.message.toLowerCase()).to.include(\"not found\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/-1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "-1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar ID não numérico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"CT-API-015 - Validar HTTP 404 para ID não numérico\", function () {\r\n    pm.response.to.have.status(404);\r\n\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.not.have.property(\"id\");\r\n});\r\n\r\npm.test(\"CT-API-018 - Validar mensagem de erro\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta).to.have.property(\"message\");\r\n    pm.expect(resposta.message).to.be.a(\"string\");\r\n    pm.expect(resposta.message.trim()).to.not.be.empty;\r\n    pm.expect(resposta.message.toLowerCase()).to.include(\"not found\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/adh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "adh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validar integridade dos campos essenciais de todos os produtos do catálogo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-019 - Validar integridade dos campos essenciais de todos os produtos\", function () {\r\n\r\n    const resposta = pm.response.json();\r\n    const inconsistencias = [];\r\n    let quantidadeAnalisada = 0;\r\n\r\n    // Validar estrutura da resposta\r\n    if (!Array.isArray(resposta.products)) {\r\n        inconsistencias.push({\r\n            erro: \"A resposta não contém um array de produtos.\"\r\n        });\r\n    } else {\r\n\r\n        const produtos = resposta.products;\r\n        quantidadeAnalisada = produtos.length;\r\n\r\n        // Validar quantidade total de produtos\r\n        if (!Number.isInteger(resposta.total) || resposta.total < 0) {\r\n            inconsistencias.push({\r\n                erro: \"Campo total ausente ou inválido.\"\r\n            });\r\n        } else if (produtos.length !== resposta.total) {\r\n            inconsistencias.push({\r\n                erro: \"Quantidade retornada diferente do total informado pela API.\",\r\n                quantidadeRetornada: produtos.length,\r\n                totalInformado: resposta.total\r\n            });\r\n        }\r\n\r\n        // Percorrer todos os produtos\r\n        produtos.forEach(function (produto, indice) {\r\n\r\n            const id = produto && produto.id !== undefined\r\n                ? produto.id\r\n                : \"Não identificado\";\r\n\r\n            function registrarInconsistencia(campo, problema) {\r\n                inconsistencias.push({\r\n                    produtoID: id,\r\n                    posicao: indice + 1,\r\n                    campo: campo,\r\n                    problema: problema\r\n                });\r\n            }\r\n\r\n            if (!produto || typeof produto !== \"object\" || Array.isArray(produto)) {\r\n                registrarInconsistencia(\"produto\", \"Estrutura inválida.\");\r\n                return;\r\n            }\r\n\r\n            // Validar presença e integridade do ID\r\n            if (!Number.isInteger(produto.id) || produto.id <= 0) {\r\n                registrarInconsistencia(\"id\", \"Deve ser um número inteiro positivo.\");\r\n            }\r\n\r\n            // Validar campos de texto\r\n            [\"title\", \"description\", \"category\", \"thumbnail\"].forEach(function (campo) {\r\n\r\n                if (typeof produto[campo] !== \"string\" || produto[campo].trim() === \"\") {\r\n                    registrarInconsistencia(campo, \"Deve ser uma string não vazia.\");\r\n                }\r\n\r\n            });\r\n\r\n            // Validar preço\r\n            if (typeof produto.price !== \"number\" || !Number.isFinite(produto.price) || produto.price <= 0) {\r\n                registrarInconsistencia(\"price\", \"Deve ser um número maior que zero.\");\r\n            }\r\n\r\n            // Validar array de imagens\r\n            if (!Array.isArray(produto.images) || produto.images.length === 0) {\r\n                registrarInconsistencia(\"images\", \"Deve ser um array não vazio.\");\r\n            } else {\r\n\r\n                produto.images.forEach(function (imagem, indiceImagem) {\r\n\r\n                    if (typeof imagem !== \"string\" || imagem.trim() === \"\") {\r\n                        registrarInconsistencia(\r\n                            \"images[\" + indiceImagem + \"]\",\r\n                            \"Deve ser uma string não vazia.\"\r\n                        );\r\n                    }\r\n\r\n                });\r\n\r\n            }\r\n\r\n        });\r\n\r\n    }\r\n\r\n    // Consolidar resultados\r\n    console.log(\"RELATÓRIO CT-API-019\");\r\n    console.log(\"Produtos analisados:\", quantidadeAnalisada);\r\n    console.log(\"Total de inconsistências:\", inconsistencias.length);\r\n\r\n    if (inconsistencias.length > 0) {\r\n        console.table(inconsistencias);\r\n    } else {\r\n        console.log(\"Todos os produtos atenderam aos critérios de validação.\");\r\n    }\r\n\r\n    pm.expect(\r\n        inconsistencias,\r\n        \"Foram identificadas inconsistências: \" +\r\n        JSON.stringify(inconsistencias, null, 2)\r\n    ).to.have.lengthOf(0);\r\n\r\n});\r\n"
                 ]
               }
             }
