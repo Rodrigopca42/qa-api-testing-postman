@@ -222,8 +222,850 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Pesquisa com correspondência",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-020 V01 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-020 V01 - Pesquisa retorna produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.a(\"number\").above(0);\r\n});\r\n\r\npm.test(\"CT-API-020 V01 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(resposta.products.length);\r\n    pm.expect(resposta.total).to.be.at.least(resposta.products.length);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=phone",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "phone"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa sem correspondência",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-020 V02 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-020 V02 - Pesquisa retorna lista vazia\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.empty;\r\n    pm.expect(resposta.total).to.equal(0);\r\n});\r\n\r\npm.test(\"CT-API-020 V02 - Paginação sem resultados\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(0);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=produto_inexistente_xyz999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "produto_inexistente_xyz999"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com parâmetro q vazio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-021 V01 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-021 V01 - Pesquisa retorna produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.above(0);\r\n});\r\n\r\npm.test(\"CT-API-021 V01 - Paginação padrão\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(30);\r\n    pm.expect(resposta.products.length).to.equal(resposta.limit);\r\n    pm.expect(resposta.total).to.be.at.least(resposta.products.length);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa sem parâmetro q",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-021 V02 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-021 V02 - Pesquisa retorna produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.above(0);\r\n});\r\n\r\npm.test(\"CT-API-021 V02 - Paginação padrão\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(30);\r\n    pm.expect(resposta.products.length).to.equal(resposta.limit);\r\n    pm.expect(resposta.total).to.be.at.least(resposta.products.length);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com letras minúsculas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-022 V01 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-022 V01 - Pesquisa retorna produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.above(0);\r\n});\r\n\r\npm.test(\"CT-API-022 V01 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(resposta.products.length);\r\n    pm.expect(resposta.total).to.be.at.least(resposta.products.length);\r\n});\r\n\r\nconst resposta = pm.response.json();\r\n\r\nif (pm.response.code === 200 && Array.isArray(resposta.products)) {\r\n    const ids = resposta.products.map(produto => produto.id).sort((a, b) => a - b);\r\n    pm.collectionVariables.set(\"ct022_ids_minusculas\", JSON.stringify(ids));\r\n}\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=phone",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "phone"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com letras maiúsculas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-022 V02 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-022 V02 - Pesquisa retorna produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.above(0);\r\n});\r\n\r\npm.test(\"CT-API-022 V02 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(resposta.products.length);\r\n    pm.expect(resposta.total).to.be.at.least(resposta.products.length);\r\n});\r\n\r\npm.test(\"CT-API-022 V02 - Resultados equivalentes a V01\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    const idsMaiusculas = resposta.products\r\n        .map(produto => produto.id)\r\n        .sort((a, b) => a - b);\r\n\r\n    const idsSalvos = pm.collectionVariables.get(\"ct022_ids_minusculas\");\r\n\r\n    pm.expect(idsSalvos, \"Execute a V01 antes da V02\").to.exist;\r\n\r\n    const idsMinusculas = JSON.parse(idsSalvos);\r\n\r\n    pm.expect(idsMaiusculas).to.deep.equal(idsMinusculas);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=PHONE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "PHONE"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com texto parcial",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-022 V03 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-022 V03 - Pesquisa retorna produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.above(0);\r\n});\r\n\r\n\r\npm.test(\"CT-API-022 V03 - Correspondência parcial no título ou descrição\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    resposta.products.forEach(function (produto) {\r\n        const titulo = produto.title.toLowerCase();\r\n        const descricao = produto.description.toLowerCase();\r\n\r\n        pm.expect(\r\n            titulo.includes(\"iph\") || descricao.includes(\"iph\"),\r\n            `Produto ${produto.id} sem correspondência`\r\n        ).to.be.true;\r\n    });\r\n});\r\n\r\n\r\npm.test(\"CT-API-022 V03 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(resposta.products.length);\r\n    pm.expect(resposta.total).to.be.at.least(resposta.products.length);\r\n});\r\n\r\nconst resposta = pm.response.json();\r\n\r\nif (pm.response.code === 200 && Array.isArray(resposta.products)) {\r\n    const ids = resposta.products\r\n        .map(produto => produto.id)\r\n        .sort((a, b) => a - b);\r\n\r\n    pm.collectionVariables.set(\r\n        \"ct022_ids_parcial\",\r\n        JSON.stringify(ids)\r\n    );\r\n}\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com espaços",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-022 V04 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-022 V04 - Pesquisa retorna produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.above(0);\r\n});\r\n\r\npm.test(\"CT-API-022 V04 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(resposta.products.length);\r\n    pm.expect(resposta.total).to.be.at.least(resposta.products.length);\r\n});\r\n\r\npm.test(\"CT-API-022 V04 - Resultados equivalentes a V03\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    const idsComEspacos = resposta.products\r\n        .map(produto => produto.id)\r\n        .sort((a, b) => a - b);\r\n\r\n    const idsSalvos = pm.collectionVariables.get(\"ct022_ids_parcial\");\r\n\r\n    pm.expect(idsSalvos, \"Execute a V03 antes da V04\").to.exist;\r\n\r\n    const idsSemEspacos = JSON.parse(idsSalvos);\r\n\r\n    pm.expect(idsComEspacos).to.deep.equal(idsSemEspacos);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=%20iph%20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "%20iph%20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa somente com espaços",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-023 V01 - Status HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"CT-API-023 V01 - Mensagem de erro presente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.be.a(\"string\").that.is.not.empty;\r\n});\r\n\r\npm.test(\"CT-API-023 V01 - Erro referente ao parâmetro q\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"Invalid 'q'\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=%20%20%20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "%20%20%20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com caractere especial",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-023 V02 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-023 V02 - Lista de produtos vazia\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.empty;\r\n    pm.expect(resposta.total).to.equal(0);\r\n});\r\n\r\npm.test(\"CT-API-023 V02 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(0);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=%40",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "%40"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com valor numérico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-023 V03 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-023 V03 - Lista de produtos vazia\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.empty;\r\n    pm.expect(resposta.total).to.equal(0);\r\n});\r\n\r\npm.test(\"CT-API-023 V03 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(0);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=123",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "123"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Primeira página da pesquisa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-024 V01 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-024 V01 - Primeira página com cinco produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").with.lengthOf(5);\r\n    pm.expect(resposta.total).to.be.at.least(5);\r\n});\r\n\r\npm.test(\"CT-API-024 V01 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(5);\r\n});\r\n\r\npm.test(\"CT-API-024 V01 - IDs únicos na primeira página\", function () {\r\n    const resposta = pm.response.json();\r\n    const ids = resposta.products.map(produto => produto.id);\r\n\r\n    pm.expect(new Set(ids).size).to.equal(ids.length);\r\n});\r\n\r\nconst resposta = pm.response.json();\r\n\r\nif (pm.response.code === 200 && Array.isArray(resposta.products)) {\r\n    const ids = resposta.products.map(produto => produto.id);\r\n\r\n    pm.collectionVariables.set(\"ct024_ids_pagina1\", JSON.stringify(ids));\r\n    pm.collectionVariables.set(\"ct024_total\", resposta.total);\r\n}\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=phone&limit=5&skip=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "phone"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "skip",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Segunda página da pesquisa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-024 V02 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-024 V02 - Segunda página com cinco produtos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").with.lengthOf(5);\r\n});\r\n\r\npm.test(\"CT-API-024 V02 - Paginação e total consistentes\", function () {\r\n    const resposta = pm.response.json();\r\n    const totalSalvo = pm.collectionVariables.get(\"ct024_total\");\r\n\r\n    pm.expect(totalSalvo, \"Execute a V01 antes da V02\").to.exist;\r\n    pm.expect(resposta.skip).to.equal(5);\r\n    pm.expect(resposta.limit).to.equal(5);\r\n    pm.expect(resposta.total).to.equal(Number(totalSalvo));\r\n});\r\n\r\npm.test(\"CT-API-024 V02 - Sem IDs duplicados entre páginas\", function () {\r\n    const resposta = pm.response.json();\r\n    const idsSalvos = pm.collectionVariables.get(\"ct024_ids_pagina1\");\r\n\r\n    pm.expect(idsSalvos, \"Execute a V01 antes da V02\").to.exist;\r\n\r\n    const idsPagina1 = JSON.parse(idsSalvos);\r\n    const idsPagina2 = resposta.products.map(produto => produto.id);\r\n\r\n    pm.expect(new Set(idsPagina2).size).to.equal(idsPagina2.length);\r\n\r\n    const idsRepetidos = idsPagina2.filter(id => idsPagina1.includes(id));\r\n\r\n    pm.expect(idsRepetidos).to.be.empty;\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=phone&limit=5&skip=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "phone"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "skip",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Página com resultados restantes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-025 V01 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-025 V01 - Retorna somente os produtos restantes\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\");\r\n    pm.expect(resposta.products.length).to.equal(resposta.total - resposta.skip);\r\n});\r\n\r\npm.test(\"CT-API-025 V01 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(5);\r\n    pm.expect(resposta.limit).to.equal(resposta.products.length);\r\n    pm.expect(resposta.products.length).to.be.at.most(5);\r\n});\r\n\r\npm.test(\"CT-API-025 V01 - IDs únicos\", function () {\r\n    const resposta = pm.response.json();\r\n    const ids = resposta.products.map(produto => produto.id);\r\n\r\n    pm.expect(new Set(ids).size).to.equal(ids.length);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph&limit=5&skip=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "skip",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Paginação além dos resultados disponíveis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-025 V02 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-025 V02 - Lista vazia após ultrapassar o total\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.empty;\r\n    pm.expect(resposta.skip).to.be.above(resposta.total);\r\n});\r\n\r\npm.test(\"CT-API-025 V02 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(10);\r\n    pm.expect(resposta.limit).to.equal(0);\r\n});\r\n\r\npm.test(\"CT-API-025 V02 - Total preservado\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.total).to.be.a(\"number\").that.is.above(0);\r\n    pm.expect(resposta.total).to.be.below(resposta.skip);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph&limit=5&skip=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "skip",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa com limite zero",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-026 V01 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-026 V01 - Retorna todos os produtos encontrados\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.products.length).to.equal(resposta.total);\r\n});\r\n\r\npm.test(\"CT-API-026 V01 - Paginação consistente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.equal(0);\r\n    pm.expect(resposta.limit).to.equal(resposta.products.length);\r\n});\r\n\r\npm.test(\"CT-API-026 V01 - IDs únicos\", function () {\r\n    const resposta = pm.response.json();\r\n    const ids = resposta.products.map(produto => produto.id);\r\n\r\n    pm.expect(new Set(ids).size).to.equal(ids.length);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph&limit=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                },
+                {
+                  "key": "limit",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Limite negativo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-027 V01 - Status HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"CT-API-027 V01 - Mensagem de erro presente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.be.a(\"string\").that.is.not.empty;\r\n});\r\n\r\npm.test(\"CT-API-027 V01 - Erro referente ao parâmetro limit\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"Invalid 'limit'\");\r\n});\r\n\r\npm.test(\"CT-API-027 V01 - Mensagem informa limite positivo\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"should be a positive number\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph&limit=-1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                },
+                {
+                  "key": "limit",
+                  "value": "-1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Limite não numérico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-027 V02 - Status HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"CT-API-027 V02 - Mensagem de erro presente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.be.a(\"string\").that.is.not.empty;\r\n});\r\n\r\npm.test(\"CT-API-027 V02 - Erro referente ao parâmetro limit\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"Invalid 'limit'\");\r\n});\r\n\r\npm.test(\"CT-API-027 V02 - Mensagem informa limite positivo\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"should be a positive number\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph&limit=abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                },
+                {
+                  "key": "limit",
+                  "value": "abc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Skip negativo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-028 V01 - Status HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"CT-API-028 V01 - Mensagem de erro presente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.be.a(\"string\").that.is.not.empty;\r\n});\r\n\r\npm.test(\"CT-API-028 V01 - Erro referente ao parâmetro skip\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"Invalid 'skip'\");\r\n});\r\n\r\npm.test(\"CT-API-028 V01 - Mensagem informa valor positivo\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"should be a positive number\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph&skip=-1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                },
+                {
+                  "key": "skip",
+                  "value": "-1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Skip não numérico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-028 V02 - Status HTTP 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"CT-API-028 V02 - Mensagem de erro presente\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.be.a(\"string\").that.is.not.empty;\r\n});\r\n\r\npm.test(\"CT-API-028 V02 - Erro referente ao parâmetro skip\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"Invalid 'skip'\");\r\n});\r\n\r\npm.test(\"CT-API-028 V02 - Mensagem informa valor positivo\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.message).to.include(\"should be a positive number\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=iph&skip=abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "iph"
+                },
+                {
+                  "key": "skip",
+                  "value": "abc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pesquisa sem resultados com paginação",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-029 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-029 - Lista de produtos vazia\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.empty;\r\n});\r\n\r\npm.test(\"CT-API-029 - Total de resultados igual a zero\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.total).to.eql(0);\r\n});\r\n\r\npm.test(\"CT-API-029 - Paginação consistente com a resposta\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.skip).to.eql(5);\r\n    pm.expect(resposta.limit).to.eql(0);\r\n    pm.expect(resposta.limit).to.eql(resposta.products.length);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=produto_inexistente_xyz999&limit=5&skip=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "produto_inexistente_xyz999"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "skip",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validação da estrutura e dos dados retornados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "\r\npm.test(\"CT-API-030 - Status HTTP 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"CT-API-030 - Estrutura e paginação válidas\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    pm.expect(resposta.products).to.be.an(\"array\").that.is.not.empty;\r\n    pm.expect(resposta.total).to.be.a(\"number\").that.is.at.least(0);\r\n    pm.expect(resposta.skip).to.be.a(\"number\").that.is.at.least(0);\r\n    pm.expect(resposta.limit).to.be.a(\"number\").that.is.at.least(0);\r\n    pm.expect(resposta.limit).to.eql(resposta.products.length);\r\n    pm.expect(resposta.products.length).to.be.at.most(resposta.total);\r\n});\r\n\r\npm.test(\"CT-API-030 - Produtos possuem dados obrigatórios válidos\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    resposta.products.forEach(function (produto) {\r\n        pm.expect(produto.id).to.be.a(\"number\").that.is.above(0);\r\n        pm.expect(Number.isInteger(produto.id)).to.be.true;\r\n        pm.expect(produto.title).to.be.a(\"string\").that.is.not.empty;\r\n        pm.expect(produto.price).to.be.a(\"number\").that.is.above(0);\r\n    });\r\n});\r\n\r\npm.test(\"CT-API-030 - Produtos não possuem IDs duplicados\", function () {\r\n    const resposta = pm.response.json();\r\n\r\n    const ids = resposta.products.map(produto => produto.id);\r\n    const idsUnicos = new Set(ids);\r\n\r\n    pm.expect(idsUnicos.size).to.eql(ids.length);\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/search?q=phone",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "phone"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "ct022_ids_minusculas",
+      "value": ""
+    },
+    {
+      "key": "ct022_ids_parcial",
+      "value": ""
+    },
+    {
+      "key": "ct024_ids_pagina1",
+      "value": ""
+    },
+    {
+      "key": "ct024_total",
+      "value": ""
     }
   ]
 }
